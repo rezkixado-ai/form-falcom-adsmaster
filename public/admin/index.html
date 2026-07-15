@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard Lead — Falcom Technology</title>
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body>
+
+<!-- ===== LOGIN SCREEN ===== -->
+<section id="loginScreen" class="ad-login">
+    <form id="loginForm" class="ad-login__box">
+        <h1>Dashboard Lead</h1>
+        <p class="ad-login__sub">Falcom Technology &mdash; akses internal</p>
+        <input type="password" id="loginPassword" placeholder="Password" required autofocus>
+        <button type="submit" class="ad-btn ad-btn--primary">Masuk</button>
+        <p class="ad-login__error" id="loginError" hidden></p>
+    </form>
+</section>
+
+<!-- ===== DASHBOARD ===== -->
+<section id="dashboard" class="ad-dash" hidden>
+    <header class="ad-dash__header">
+        <span class="ad-dash__title">FALCOM <span>LEAD DASHBOARD</span></span>
+        <button id="exportBtn" class="ad-btn ad-btn--ghost">Export CSV</button>
+    </header>
+
+    <div class="ad-cards">
+        <div class="ad-card">
+            <span class="ad-card__label">Total lead</span>
+            <span class="ad-card__value" id="statTotal">0</span>
+        </div>
+        <div class="ad-card">
+            <span class="ad-card__label">7 hari terakhir</span>
+            <span class="ad-card__value" id="statWeek">0</span>
+        </div>
+        <div class="ad-card">
+            <span class="ad-card__label">Belum dihubungi</span>
+            <span class="ad-card__value ad-card__value--warn" id="statBaru">0</span>
+        </div>
+        <div class="ad-card">
+            <span class="ad-card__label">Deal (bulan ini)</span>
+            <span class="ad-card__value ad-card__value--good" id="statDeal">0</span>
+        </div>
+        <div class="ad-card">
+            <span class="ad-card__label">Potensi pipeline</span>
+            <span class="ad-card__value" id="statPipeline">Rp0</span>
+        </div>
+    </div>
+
+    <div class="ad-panel">
+        <h2>Lead masuk per hari (30 hari terakhir)</h2>
+        <canvas id="trendChart" height="90"></canvas>
+    </div>
+
+    <div class="ad-panel">
+        <h2>Lead per campaign</h2>
+        <div id="campaignBars" class="ad-bars"></div>
+    </div>
+
+    <div class="ad-panel">
+        <div class="ad-filters">
+            <input type="text" id="searchInput" placeholder="Cari nama / nomor WA...">
+            <select id="statusFilter">
+                <option value="">Semua status</option>
+                <option value="baru">Baru</option>
+                <option value="dihubungi">Dihubungi</option>
+                <option value="ditawar">Ditawar</option>
+                <option value="deal">Deal</option>
+                <option value="gagal">Gagal</option>
+            </select>
+        </div>
+
+        <div class="ad-table-wrap">
+            <table class="ad-table">
+                <thead>
+                    <tr>
+                        <th>Tanggal</th>
+                        <th>Nama</th>
+                        <th>WhatsApp</th>
+                        <th>Perusahaan</th>
+                        <th>Kebutuhan</th>
+                        <th>Campaign</th>
+                        <th>Status</th>
+                        <th>Nilai Deal (Rp)</th>
+                        <th>Catatan</th>
+                    </tr>
+                </thead>
+                <tbody id="leadsTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script src="/admin/admin.js" defer></script>
+</body>
+</html>

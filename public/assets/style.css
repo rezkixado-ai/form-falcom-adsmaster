@@ -1,0 +1,193 @@
+/* ==========================================================================
+   FALCOM TECHNOLOGY — Landing Ads (Netlify, standalone)
+   ========================================================================== */
+
+:root {
+    --bg:            #0D1013;
+    --surface:        #161B1F;
+    --surface-2:      #1E252B;
+    --line:           #2A323A;
+    --text:           #E7ECEF;
+    --text-dim:       #8B98A3;
+    --accent-orange:  #FF7A33;
+    --accent-aqua:    #21C7B8;
+    --accent-orange-glow: rgba(255, 122, 51, 0.35);
+    --danger: #FF6B6B;
+
+    --font-display: "Big Shoulders Display", sans-serif;
+    --font-body:    "IBM Plex Sans", -apple-system, sans-serif;
+    --font-mono:    "IBM Plex Mono", monospace;
+
+    --maxw: 1160px;
+    --radius: 10px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; display: block; }
+h1, h2, h3 { font-family: var(--font-display); margin: 0; line-height: 1.05; }
+p { margin: 0; }
+a { color: inherit; text-decoration: none; }
+ul { margin: 0; padding: 0; list-style: none; }
+
+@media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
+
+.fl-section__inner { max-width: var(--maxw); margin: 0 auto; padding: 88px 24px; }
+.fl-h2 {
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 700;
+    max-width: 640px;
+    margin-bottom: 40px;
+    color: var(--text);
+}
+.fl-h2--light { color: #fff; }
+
+.fl-chip {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    padding: 6px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--text-dim);
+    background: var(--surface);
+}
+
+.fl-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 16px;
+    padding: 15px 28px;
+    border: none;
+    cursor: pointer;
+    border-radius: var(--radius);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+.fl-btn--primary {
+    background: var(--accent-orange);
+    color: #171006;
+    box-shadow: 0 0 0 1px rgba(255,122,51,0.4), 0 12px 24px -8px var(--accent-orange-glow);
+}
+.fl-btn--primary:hover { transform: translateY(-2px); }
+.fl-btn--primary:disabled { opacity: 0.6; cursor: progress; transform: none; }
+.fl-btn--block { width: 100%; }
+.fl-btn--primary:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 2px solid var(--accent-aqua);
+    outline-offset: 3px;
+}
+
+.fl-header {
+    position: sticky; top: 0; z-index: 20;
+    background: rgba(13, 16, 19, 0.85);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+}
+.fl-header__inner {
+    max-width: var(--maxw); margin: 0 auto; padding: 14px 24px;
+    display: flex; align-items: center; gap: 12px;
+}
+.fl-header__wordmark { font-family: var(--font-display); font-weight: 700; font-size: 18px; }
+.fl-header__wordmark span { color: var(--accent-orange); margin-left: 4px; }
+.fl-header__cta {
+    margin-left: auto; font-size: 14px; font-weight: 600; padding: 9px 16px;
+    border: 1px solid var(--accent-orange); border-radius: 999px; color: var(--accent-orange);
+}
+
+.fl-hero { border-bottom: 1px solid var(--line); }
+.fl-hero__grid {
+    max-width: var(--maxw); margin: 0 auto; padding: 72px 24px 96px;
+    display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 48px; align-items: center;
+}
+.fl-eyebrow { font-family: var(--font-mono); font-size: 13px; color: var(--accent-aqua); margin-bottom: 20px; }
+.fl-hero__title { font-size: clamp(38px, 5.4vw, 64px); font-weight: 700; color: #fff; }
+.fl-hero__sub { color: var(--text-dim); font-size: 18px; max-width: 480px; margin: 24px 0 28px; }
+.fl-hero__specs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+
+.fl-hero__visual { position: relative; }
+.fl-fiber-svg { width: 100%; height: auto; }
+.fl-fiber-jacket { fill: var(--surface); }
+.fl-fiber-ring { fill: none; stroke: var(--line); stroke-width: 2; }
+.fl-signal-path { stroke: var(--line); stroke-width: 2; }
+.fl-signal-node { fill: var(--surface-2); stroke: var(--accent-aqua); stroke-width: 2; }
+.fl-signal-pulse {
+    fill: var(--accent-orange);
+    filter: drop-shadow(0 0 6px var(--accent-orange));
+    offset-path: path('M180,180 L330,180');
+    animation: fl-pulse-travel 2.6s ease-in-out infinite;
+}
+@keyframes fl-pulse-travel {
+    0%   { offset-distance: 0%;  opacity: 0; }
+    8%   { opacity: 1; }
+    46%  { offset-distance: 100%; opacity: 1; }
+    54%  { opacity: 0; }
+    100% { offset-distance: 100%; opacity: 0; }
+}
+.fl-fiber-caption { text-align: center; font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); margin-top: 12px; }
+
+.fl-trust { border-bottom: 1px solid var(--line); background: var(--surface); }
+.fl-trust__inner {
+    max-width: var(--maxw); margin: 0 auto; padding: 32px 24px;
+    display: flex; justify-content: space-around; flex-wrap: wrap; gap: 24px; text-align: center;
+}
+.fl-trust__item { display: flex; flex-direction: column; gap: 4px; }
+.fl-num { font-family: var(--font-display); font-size: 32px; font-weight: 700; color: var(--accent-orange); }
+.fl-trust__item span:last-child { font-size: 13px; color: var(--text-dim); }
+
+.fl-problem__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.fl-problem__card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; }
+.fl-problem__pain { color: var(--text-dim); font-style: italic; margin-bottom: 14px; }
+.fl-problem__fix { font-weight: 500; }
+.fl-problem__fix::before { content: "→ "; color: var(--accent-aqua); }
+
+.fl-testimoni { background: linear-gradient(180deg, var(--bg), #12171b); }
+.fl-testimoni__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.fl-testimoni__card { margin: 0; padding: 28px; border-left: 3px solid var(--accent-orange); background: var(--surface); border-radius: 0 var(--radius) var(--radius) 0; }
+.fl-testimoni__card p { font-size: 17px; color: #fff; margin-bottom: 14px; }
+.fl-testimoni__card cite { font-style: normal; font-size: 13px; color: var(--text-dim); }
+
+.fl-form { background: var(--surface); }
+.fl-form__inner {
+    max-width: var(--maxw); margin: 0 auto; padding: 88px 24px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start;
+}
+.fl-form__copy p { color: var(--text-dim); margin: 16px 0 20px; max-width: 420px; }
+.fl-form__points li { position: relative; padding-left: 22px; margin-bottom: 10px; color: var(--text-dim); font-size: 15px; }
+.fl-form__points li::before { content: "✓"; position: absolute; left: 0; color: var(--accent-aqua); font-weight: 700; }
+.fl-form__box { background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; }
+
+.fl-field { margin-bottom: 18px; }
+.fl-field label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+.fl-optional { font-weight: 400; color: var(--text-dim); }
+.fl-field input, .fl-field select {
+    width: 100%; padding: 12px 14px; font-family: var(--font-body); font-size: 15px;
+    background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; color: var(--text);
+}
+.fl-field input:invalid:not(:placeholder-shown) { border-color: var(--danger); }
+.fl-form__error {
+    color: var(--danger); font-size: 14px; margin-top: 12px; text-align: center;
+}
+
+.fl-footer { padding: 32px 24px; text-align: center; color: var(--text-dim); font-size: 13px; border-top: 1px solid var(--line); }
+
+@media (max-width: 860px) {
+    .fl-hero__grid, .fl-form__inner { grid-template-columns: 1fr; }
+    .fl-hero__visual { order: -1; max-width: 280px; margin: 0 auto 12px; }
+    .fl-problem__grid, .fl-testimoni__grid { grid-template-columns: 1fr; }
+    .fl-header__cta { font-size: 13px; padding: 8px 12px; }
+}
