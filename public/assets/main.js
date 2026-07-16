@@ -9,6 +9,173 @@
 
     document.getElementById("year").textContent = new Date().getFullYear();
 
+    /* =========================================================================
+       HERO SLIDER — edit array di bawah ini untuk ganti isi slide.
+       Tambah objek baru = nambah slide. Hapus objek = kurangin slide.
+       Urutan array = urutan slide yang muncul.
+       ========================================================================= */
+    var HERO_SLIDES = [
+        {
+            eyebrow: "Distributor Resmi &middot; Sejak 2003 &middot; Surabaya &amp; Jakarta",
+            title: "Infrastruktur Fiber<br>yang Bisnis Anda<br>Bisa Andalkan.",
+            sub: "Kabel fiber optik, OLT, ONU, dan perangkat FTTH untuk ISP dan kontraktor jaringan &mdash; stok ready, harga bertingkat untuk pembelian volume, dan tim konsultasi yang paham lapangan.",
+            specs: ["2 &ndash; 288 CORE", "G.652D / G.657A", "STOK READY"],
+            ctaPrimaryText: "Konsultasi Kebutuhan Saya",
+            ctaPrimaryHref: "#form",
+            ctaSecondaryText: "Lihat Program Kemitraan",
+            ctaSecondaryHref: "#program-mitra"
+        },
+        {
+            eyebrow: "Program Mitra &middot; Harga Bertingkat &middot; Stok Prioritas",
+            title: "Jadi Mitra Resmi,<br>Bukan Sekadar<br>Reseller Biasa.",
+            sub: "Harga khusus mitra, dukungan materi marketing, dan prioritas stok untuk agen serta reseller yang serius mengembangkan bisnis jaringan.",
+            specs: ["DISKON BERTINGKAT", "MATERI PROMOSI", "PRIORITAS STOK"],
+            ctaPrimaryText: "Daftar Jadi Mitra",
+            ctaPrimaryHref: "#program-mitra",
+            ctaSecondaryText: "Lihat Harga Volume",
+            ctaSecondaryHref: "#harga"
+        },
+        {
+            eyebrow: "20+ Tahun Beroperasi &middot; Ribuan ISP Terlayani",
+            title: "Stok Ready,<br>Konsultasi Teknis<br>yang Paham Lapangan.",
+            sub: "Tim kami bukan sekadar jual barang &mdash; kami bantu hitung kebutuhan, redaman, dan desain jaringan Anda sebelum barang dikirim.",
+            specs: ["QUALITY CONTROL", "RESPON CEPAT", "6 KOTA CABANG"],
+            ctaPrimaryText: "Konsultasi Gratis Sekarang",
+            ctaPrimaryHref: "#form",
+            ctaSecondaryText: "Lihat Produk",
+            ctaSecondaryHref: "#harga"
+        }
+    ];
+    var HERO_AUTOPLAY_MS = 6500; // kecepatan ganti slide otomatis (ms) — makin besar makin lambat
+
+    (function initHeroSlider() {
+        var sliderEl = document.getElementById("heroSlider");
+        var dotsEl = document.getElementById("heroDots");
+        var prevBtn = document.getElementById("heroPrev");
+        var nextBtn = document.getElementById("heroNext");
+        if (!sliderEl || HERO_SLIDES.length === 0) return;
+
+        var current = 0;
+        var autoplayTimer = null;
+
+        // Render semua slide sekali di awal
+        sliderEl.innerHTML = HERO_SLIDES.map(function (slide, i) {
+            var specsHtml = (slide.specs || []).map(function (s) {
+                return '<span class="fl-chip">' + s + "</span>";
+            }).join("");
+            return (
+                '<div class="fl-hero__slide' + (i === 0 ? " is-active" : "") + '" data-slide-index="' + i + '">' +
+                    '<p class="fl-eyebrow">' + slide.eyebrow + "</p>" +
+                    '<h1 class="fl-hero__title">' + slide.title + "</h1>" +
+                    '<p class="fl-hero__sub">' + slide.sub + "</p>" +
+                    '<div class="fl-hero__specs">' + specsHtml + "</div>" +
+                    '<div class="fl-hero__ctas">' +
+                        '<a href="' + slide.ctaPrimaryHref + '" class="fl-btn fl-btn--primary">' + slide.ctaPrimaryText + "</a>" +
+                        '<a href="' + slide.ctaSecondaryHref + '" class="fl-btn fl-btn--outline">' + slide.ctaSecondaryText + "</a>" +
+                    "</div>" +
+                "</div>"
+            );
+        }).join("");
+
+        // Render dots
+        if (dotsEl) {
+            dotsEl.innerHTML = HERO_SLIDES.map(function (_, i) {
+                return '<button type="button" class="fl-hero__dot' + (i === 0 ? " is-active" : "") + '" data-dot-index="' + i + '" aria-label="Ke slide ' + (i + 1) + '"></button>';
+            }).join("");
+        }
+
+        var slideEls = sliderEl.querySelectorAll(".fl-hero__slide");
+        var dotEls = dotsEl ? dotsEl.querySelectorAll(".fl-hero__dot") : [];
+
+        function goTo(index) {
+            if (index === current) return;
+            slideEls[current].classList.remove("is-active");
+            dotEls[current] && dotEls[current].classList.remove("is-active");
+            current = (index + HERO_SLIDES.length) % HERO_SLIDES.length;
+            slideEls[current].classList.add("is-active");
+            dotEls[current] && dotEls[current].classList.add("is-active");
+        }
+
+        function next() { goTo(current + 1); }
+        function prev() { goTo(current - 1); }
+
+        function startAutoplay() {
+            stopAutoplay();
+            if (HERO_SLIDES.length > 1) {
+                autoplayTimer = setInterval(next, HERO_AUTOPLAY_MS);
+            }
+        }
+        function stopAutoplay() {
+            if (autoplayTimer) clearInterval(autoplayTimer);
+        }
+
+        if (nextBtn) nextBtn.addEventListener("click", function () { next(); startAutoplay(); });
+        if (prevBtn) prevBtn.addEventListener("click", function () { prev(); startAutoplay(); });
+        if (dotsEl) {
+            dotsEl.addEventListener("click", function (e) {
+                var btn = e.target.closest(".fl-hero__dot");
+                if (!btn) return;
+                goTo(parseInt(btn.getAttribute("data-dot-index"), 10));
+                startAutoplay();
+            });
+        }
+
+        // Pause autoplay saat hover, biar user bisa baca tenang
+        sliderEl.addEventListener("mouseenter", stopAutoplay);
+        sliderEl.addEventListener("mouseleave", startAutoplay);
+
+        startAutoplay();
+    })();
+
+    /* =========================================================================
+       HIT COUNTER — animasi angka naik pelan-pelan saat elemen kelihatan di layar.
+       Elemen butuh atribut data-count-target (angka tujuan) dan opsional
+       data-count-suffix (misal "+"). Berjalan sekali per elemen.
+       ========================================================================= */
+    (function initHitCounters() {
+        var counters = document.querySelectorAll("[data-count-target]");
+        if (counters.length === 0) return;
+
+        var DURATION_MS = 2800; // kecepatan hitung — makin besar makin lambat
+
+        function easeOutQuad(t) { return t * (2 - t); }
+
+        function animateCounter(el) {
+            var target = parseFloat(el.getAttribute("data-count-target")) || 0;
+            var suffix = el.getAttribute("data-count-suffix") || "";
+            var startTime = null;
+
+            function step(timestamp) {
+                if (startTime === null) startTime = timestamp;
+                var progress = Math.min((timestamp - startTime) / DURATION_MS, 1);
+                var eased = easeOutQuad(progress);
+                var current = Math.floor(eased * target);
+                el.textContent = current + suffix;
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    el.textContent = target + suffix; // pastikan angka akhir presisi
+                }
+            }
+            window.requestAnimationFrame(step);
+        }
+
+        if ("IntersectionObserver" in window) {
+            var observer = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        animateCounter(entry.target);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.4 });
+            counters.forEach(function (el) { observer.observe(el); });
+        } else {
+            // Fallback browser lama: langsung jalanin semua
+            counters.forEach(animateCounter);
+        }
+    })();
+
     // ---------- 1) Render 12 tube warna fiber di hero ----------
     var TUBE_COLORS = [
         "#2E5AAC", "#FF7A33", "#2F9E4F", "#7A4B32", "#7C8A93", "#E7ECEF",

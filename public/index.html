@@ -8,7 +8,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/style.css">
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-QT46MT5CWM"></script>
@@ -44,25 +44,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <section class="fl-hero">
     <div class="fl-hero__grid">
         <div class="fl-hero__copy">
-            <p class="fl-eyebrow">Distributor Resmi &middot; Sejak 2003 &middot; Surabaya &amp; Jakarta</p>
-            <h1 class="fl-hero__title">
-                Infrastruktur Fiber<br>
-                yang Bisnis Anda<br>
-                Bisa Andalkan.
-            </h1>
-            <p class="fl-hero__sub">
-                Kabel fiber optik, OLT, ONU, dan perangkat FTTH untuk ISP dan
-                kontraktor jaringan &mdash; stok ready, harga bertingkat untuk
-                pembelian volume, dan tim konsultasi yang paham lapangan.
-            </p>
-            <div class="fl-hero__specs">
-                <span class="fl-chip">2 &ndash; 288 CORE</span>
-                <span class="fl-chip">G.652D / G.657A</span>
-                <span class="fl-chip">STOK READY</span>
+            <div class="fl-hero__slider" id="heroSlider">
+                <!-- Slide-slide di-render otomatis oleh main.js dari HERO_SLIDES.
+                     Tambah/edit/hapus slide cukup ubah array HERO_SLIDES di main.js,
+                     tidak perlu sentuh HTML ini. -->
             </div>
-            <div class="fl-hero__ctas">
-                <a href="#form" class="fl-btn fl-btn--primary">Konsultasi Kebutuhan Saya</a>
-                <a href="#program-mitra" class="fl-btn fl-btn--outline">Lihat Program Kemitraan</a>
+            <div class="fl-hero__nav-row">
+                <div class="fl-hero__dots" id="heroDots"></div>
+                <div class="fl-hero__arrows">
+                    <button type="button" class="fl-hero__arrow" id="heroPrev" aria-label="Slide sebelumnya">&lsaquo;</button>
+                    <button type="button" class="fl-hero__arrow" id="heroNext" aria-label="Slide berikutnya">&rsaquo;</button>
+                </div>
             </div>
         </div>
 
@@ -83,9 +75,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <section class="fl-trust">
     <div class="fl-trust__inner">
-        <div class="fl-trust__item"><span class="fl-num">20+</span><span>Tahun beroperasi</span></div>
-        <div class="fl-trust__item"><span class="fl-num">6</span><span>Kota cabang &amp; gudang</span></div>
-        <div class="fl-trust__item"><span class="fl-num">Ribuan</span><span>ISP &amp; kontraktor terlayani</span></div>
+        <div class="fl-trust__item"><span class="fl-num" data-count-target="20" data-count-suffix="+">0</span><span>Tahun beroperasi</span></div>
+        <div class="fl-trust__item"><span class="fl-num" data-count-target="6" data-count-suffix="">0</span><span>Kota cabang &amp; gudang</span></div>
+        <div class="fl-trust__item"><span class="fl-num" data-count-target="1000" data-count-suffix="+">0</span><span>ISP &amp; kontraktor terlayani</span></div>
     </div>
     <div class="fl-cert-row">
         <div class="fl-cert-badge fl-placeholder" data-placeholder="Logo SNI">
