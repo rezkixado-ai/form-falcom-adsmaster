@@ -62,6 +62,11 @@
     </div>
 
     <div class="ad-panel">
+        <h2>Lead per wilayah</h2>
+        <div id="regionBars" class="ad-bars"></div>
+    </div>
+
+    <div class="ad-panel">
         <div class="ad-filters">
             <input type="text" id="searchInput" placeholder="Cari nama / nomor WA...">
             <select id="statusFilter">
@@ -71,6 +76,9 @@
                 <option value="ditawar">Ditawar</option>
                 <option value="deal">Deal</option>
                 <option value="gagal">Gagal</option>
+            </select>
+            <select id="regionFilter">
+                <option value="">Semua wilayah</option>
             </select>
         </div>
 
@@ -84,6 +92,8 @@
                         <th>Perusahaan</th>
                         <th>Kebutuhan</th>
                         <th>Campaign</th>
+                        <th>Wilayah</th>
+                        <th>PIC</th>
                         <th>Status</th>
                         <th>Nilai Deal (Rp)</th>
                         <th>Catatan</th>

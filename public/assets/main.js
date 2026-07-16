@@ -2,9 +2,9 @@
     "use strict";
 
     /* =========== KONFIGURASI — ganti sesuai punya lo ==================== */
-    var SUPABASE_URL = "https://kydmsidtztaqcrkvrkrk.supabase.co"; // TODO ganti
-    var SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5ZG1zaWR0enRhcWNya3Zya3JrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQwOTU3MjQsImV4cCI6MjA5OTY3MTcyNH0.Rpt-o9BYsJeUUzF0EVa8w6z19EU8kf1GZjBSVCSIaB4";            // TODO ganti
-    var WA_PHONE_NUMBER = "6288271839200";                     // TODO ganti (format 62xxxxxxxxxx)
+    var SUPABASE_URL = "https://YOUR-PROJECT-REF.supabase.co"; // TODO ganti
+    var SUPABASE_ANON_KEY = "YOUR-ANON-PUBLIC-KEY";            // TODO ganti
+    var WA_PHONE_NUMBER = "6281300000000";                     // TODO ganti (format 62xxxxxxxxxx)
     /* ====================================================================== */
 
     document.getElementById("year").textContent = new Date().getFullYear();
@@ -43,8 +43,48 @@
         };
     }
 
-    // ---------- 3) Submit form -> Supabase -> dataLayer -> redirect WA ----------
+    // ---------- 3) Muat wilayah + PIC dari Supabase, isi dropdown ----------
     var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    var regionsCache = [];
+    var regionSelect = document.getElementById("f-region");
+
+    function loadRegions() {
+        supabaseClient
+            .from("regions")
+            .select("*")
+            .eq("active", true)
+            .order("sort_order", { ascending: true })
+            .then(function (result) {
+                if (result.error || !result.data || result.data.length === 0) {
+                    console.error("Gagal memuat wilayah:", result.error);
+                    regionSelect.innerHTML = '<option value="" disabled selected>Wilayah tidak tersedia, hubungi kami langsung</option>';
+                    return;
+                }
+                regionsCache = result.data;
+                regionSelect.innerHTML = '<option value="" disabled selected>Pilih wilayah Anda</option>';
+                regionsCache.forEach(function (region) {
+                    var opt = document.createElement("option");
+                    opt.value = region.id;
+                    opt.textContent = region.region_name;
+                    regionSelect.appendChild(opt);
+                });
+            });
+    }
+    loadRegions();
+
+    // ---------- 4) Pilih PIC secara acak (50/50) dari wilayah yang dipilih ----------
+    function pickPicForRegion(regionId) {
+        var region = regionsCache.find(function (r) { return r.id === regionId; });
+        if (!region) return null;
+
+        var useFirst = Math.random() < 0.5;
+        return {
+            regionName: region.region_name,
+            picName: useFirst ? region.pic1_name : region.pic2_name,
+            picPhone: useFirst ? region.pic1_phone : region.pic2_phone
+        };
+    }
+
     var form = document.getElementById("leadForm");
     var submitBtn = document.getElementById("submitBtn");
     var errorEl = document.getElementById("formError");
@@ -54,12 +94,15 @@
         errorEl.hidden = false;
     }
 
-    function buildWaLink(fields) {
+    function buildWaLink(fields, assignment) {
+        var phone = assignment ? assignment.picPhone : WA_PHONE_NUMBER; // fallback kalau wilayah gagal dimuat
         var text =
-            "Halo Falcom, saya " + fields.name +
+            "Halo" + (assignment ? " " + assignment.picName : " Falcom") +
+            ", saya " + fields.name +
             (fields.company ? " dari " + fields.company : "") +
+            (assignment ? " (wilayah " + assignment.regionName + ")" : "") +
             ". Saya tertarik dengan " + fields.need + ".";
-        return "https://api.whatsapp.com/send?phone=" + WA_PHONE_NUMBER +
+        return "https://api.whatsapp.com/send?phone=" + phone +
             "&text=" + encodeURIComponent(text);
     }
 
@@ -67,6 +110,7 @@
         e.preventDefault();
         errorEl.hidden = true;
 
+        var regionId = document.getElementById("f-region").value;
         var fields = {
             name: document.getElementById("f-name").value.trim(),
             phone: document.getElementById("f-phone").value.trim(),
@@ -74,8 +118,8 @@
             need: document.getElementById("f-need").value
         };
 
-        if (!fields.name || !fields.phone || !fields.need) {
-            showError("Nama, nomor WhatsApp, dan kebutuhan wajib diisi.");
+        if (!fields.name || !fields.phone || !fields.need || !regionId) {
+            showError("Nama, nomor WhatsApp, wilayah, dan kebutuhan wajib diisi.");
             return;
         }
 
@@ -83,6 +127,7 @@
         submitBtn.textContent = "Mengirim...";
 
         var utm = getUtmParams();
+        var assignment = pickPicForRegion(regionId); // acak PIC 1/2 di wilayah terpilih
 
         supabaseClient
             .from("leads")
@@ -94,7 +139,10 @@
                 utm_source: utm.utm_source,
                 utm_medium: utm.utm_medium,
                 utm_campaign: utm.utm_campaign,
-                page_url: window.location.href
+                page_url: window.location.href,
+                region: assignment ? assignment.regionName : null,
+                assigned_pic_name: assignment ? assignment.picName : null,
+                assigned_pic_phone: assignment ? assignment.picPhone : null
             }])
             .then(function (result) {
                 if (result.error) {
@@ -109,11 +157,12 @@
                 window.dataLayer = window.dataLayer || [];
                 window.dataLayer.push({
                     event: "generate_lead",
-                    lead_campaign: utm.utm_campaign || "(direct)"
+                    lead_campaign: utm.utm_campaign || "(direct)",
+                    lead_region: assignment ? assignment.regionName : "(tidak diketahui)"
                 });
 
                 submitBtn.textContent = "Mengalihkan ke WhatsApp...";
-                window.location.href = buildWaLink(fields);
+                window.location.href = buildWaLink(fields, assignment);
             })
             .catch(function (err) {
                 console.error("Unexpected error:", err);

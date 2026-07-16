@@ -57,7 +57,46 @@
         renderStats();
         renderTrendChart();
         renderCampaignBars();
+        renderRegionBars();
+        populateRegionFilter();
         renderTable(applyFilters(allLeads));
+    }
+
+    function populateRegionFilter() {
+        var select = document.getElementById("regionFilter");
+        var current = select.value;
+        var regions = Array.from(new Set(allLeads.map(function (l) { return l.region; }).filter(Boolean))).sort();
+        select.innerHTML = '<option value="">Semua wilayah</option>';
+        regions.forEach(function (r) {
+            var opt = document.createElement("option");
+            opt.value = r;
+            opt.textContent = r;
+            select.appendChild(opt);
+        });
+        select.value = current;
+    }
+
+    function renderRegionBars() {
+        var counts = {};
+        allLeads.forEach(function (l) {
+            var key = l.region || "(belum pilih wilayah)";
+            counts[key] = (counts[key] || 0) + 1;
+        });
+        var entries = Object.keys(counts).map(function (k) { return [k, counts[k]]; });
+        entries.sort(function (a, b) { return b[1] - a[1]; });
+        var max = entries.length ? entries[0][1] : 1;
+        var container = document.getElementById("regionBars");
+        container.innerHTML = "";
+        entries.forEach(function (entry) {
+            var row = document.createElement("div");
+            row.className = "ad-bar-row";
+            row.innerHTML =
+                '<span>' + escapeHtml(entry[0]) + '</span>' +
+                '<span class="ad-bar-track"><span class="ad-bar-fill" style="width:' +
+                Math.round((entry[1] / max) * 100) + '%"></span></span>' +
+                '<span class="ad-bar-count">' + entry[1] + '</span>';
+            container.appendChild(row);
+        });
     }
 
     function renderStats() {
@@ -154,13 +193,15 @@
     function applyFilters(leads) {
         var search = document.getElementById("searchInput").value.toLowerCase();
         var status = document.getElementById("statusFilter").value;
+        var region = document.getElementById("regionFilter").value;
 
         return leads.filter(function (l) {
             var matchesSearch = !search ||
                 (l.name && l.name.toLowerCase().indexOf(search) !== -1) ||
                 (l.phone && l.phone.toLowerCase().indexOf(search) !== -1);
             var matchesStatus = !status || l.status === status;
-            return matchesSearch && matchesStatus;
+            var matchesRegion = !region || l.region === region;
+            return matchesSearch && matchesStatus && matchesRegion;
         });
     }
 
@@ -176,6 +217,10 @@
                 : "-";
             var campaign = lead.utm_campaign || (lead.utm_source ? lead.utm_source : "organik/langsung");
 
+            var picLabel = lead.assigned_pic_name
+                ? lead.assigned_pic_name + " (" + (lead.assigned_pic_phone || "-") + ")"
+                : "-";
+
             tr.innerHTML =
                 "<td>" + dateStr + "</td>" +
                 "<td>" + escapeHtml(lead.name) + "</td>" +
@@ -183,12 +228,14 @@
                 "<td>" + escapeHtml(lead.company || "-") + "</td>" +
                 "<td>" + escapeHtml(lead.need || "-") + "</td>" +
                 "<td>" + escapeHtml(campaign) + "</td>" +
+                "<td>" + escapeHtml(lead.region || "-") + "</td>" +
+                "<td>" + escapeHtml(picLabel) + "</td>" +
                 "<td></td>" +
                 "<td></td>" +
                 "<td></td>";
 
             // Status dropdown
-            var statusTd = tr.children[6];
+            var statusTd = tr.children[8];
             var select = document.createElement("select");
             select.className = "ad-status-select ad-status-" + lead.status;
             ["baru", "dihubungi", "ditawar", "deal", "gagal"].forEach(function (s) {
@@ -205,7 +252,7 @@
             statusTd.appendChild(select);
 
             // Deal value input
-            var valueTd = tr.children[7];
+            var valueTd = tr.children[9];
             var valueInput = document.createElement("input");
             valueInput.type = "number";
             valueInput.className = "ad-value-input";
@@ -217,7 +264,7 @@
             valueTd.appendChild(valueInput);
 
             // Notes input
-            var notesTd = tr.children[8];
+            var notesTd = tr.children[10];
             var notesInput = document.createElement("input");
             notesInput.type = "text";
             notesInput.className = "ad-notes-input";
@@ -272,11 +319,14 @@
     document.getElementById("statusFilter").addEventListener("change", function () {
         renderTable(applyFilters(allLeads));
     });
+    document.getElementById("regionFilter").addEventListener("change", function () {
+        renderTable(applyFilters(allLeads));
+    });
 
     // ---------- CSV export ----------
     document.getElementById("exportBtn").addEventListener("click", function () {
         var leads = applyFilters(allLeads);
-        var headers = ["Tanggal", "Nama", "WhatsApp", "Perusahaan", "Kebutuhan", "Campaign", "Status", "Nilai Deal", "Catatan"];
+        var headers = ["Tanggal", "Nama", "WhatsApp", "Perusahaan", "Kebutuhan", "Campaign", "Wilayah", "PIC", "Status", "Nilai Deal", "Catatan"];
         var rows = leads.map(function (l) {
             return [
                 l.created_at || "",
@@ -285,6 +335,8 @@
                 l.company || "",
                 l.need || "",
                 l.utm_campaign || l.utm_source || "",
+                l.region || "",
+                l.assigned_pic_name || "",
                 l.status || "",
                 l.deal_value || "",
                 l.notes || ""
